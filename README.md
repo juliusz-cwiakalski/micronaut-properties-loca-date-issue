@@ -1,25 +1,82 @@
-## Micronaut 3.6.0 Documentation
+# Overview
 
-- [User Guide](https://docs.micronaut.io/3.6.0/guide/index.html)
-- [API Reference](https://docs.micronaut.io/3.6.0/api/index.html)
-- [Configuration Reference](https://docs.micronaut.io/3.6.0/guide/configurationreference.html)
-- [Micronaut Guides](https://guides.micronaut.io/index.html)
----
+This repository demonstrates pitfalls with Micronaut 3.6.0 properties mapping when
+using `java.time.LocalDate` properties in `application.yml`.
 
-## Feature assertj documentation
+See also [YAML timestamp specification](https://yaml.org/type/timestamp.html).
 
-- [https://assertj.github.io/doc/](https://assertj.github.io/doc/)
+Tests use following properties class
 
+```java
 
-## Feature http-client documentation
+@ConfigurationProperties("jcw")
+@Data
+@Introspected
+public class Config {
 
-- [Micronaut HTTP Client documentation](https://docs.micronaut.io/latest/guide/index.html#httpClient)
+  LocalDate localDateProperty;
+  List<DatesListItem> dates;
 
+  @Builder
+  @Data
+  @Introspected
+  public static class DatesListItem {
 
-## Feature lombok documentation
+    private String id;
+    private String stringDate;
+    private Date javaUtilDate;
+    private LocalDate localDate;
+  }
 
-- [Micronaut Project Lombok documentation](https://docs.micronaut.io/latest/guide/index.html#lombok)
+}
+```
 
-- [https://projectlombok.org/features/all](https://projectlombok.org/features/all)
+## Problem 1: LocalDate property expressed as YAML date reports that `Property doesn't exist`
 
+Example config
+
+```yaml
+jcw:
+  local-date-property: 2022-01-01
+
+```
+
+Test that demonstrates the
+issue [LocalDateAsYamlDateTest](src/test/java/pl/jcw/bugreport/LocalDateAsYamlDateTest.java).
+
+## Problem 2: LocalDate property expressed as YAML string reports that `Unable to convert value [2022-01-01] to target type [LocalDate] due to: Text '2022-01-01' could not be parsed at index 4`
+
+Example config
+
+```yaml
+jcw:
+  local-date-property: '2022-01-01'
+```
+
+Test that demonstrates the
+issue [LocalDateAsYamlStringTest](src/test/java/pl/jcw/bugreport/LocalDateAsYamlStringTest.java).
+
+## Problem 3: List elements containing `LocalDate` property specified as YAML date are silently discarded
+
+Example config
+
+```yaml
+jcw:
+  dates:
+    - id: stringDate
+      stringDate: 2022-01-01
+    - id: javaUtilDate
+      javaUtilDate: 2022-01-01
+    # below entry is not mapped by micronaut because local date is specified as yaml timestamp
+    # see https://yaml.org/type/timestamp.html
+    - id: localDateAsDate
+      localDate: 2022-01-01
+    - id: localDateAsString
+      localDate: '2022-01-01'
+    -
+```
+
+Test that demonstrates the
+issue [DatesOnListTest#shouldContainLocalDateExpressedAsDateInYaml](src/test/java/pl/jcw/bugreport/DatesOnListTest.java)
+.
 

@@ -1,0 +1,13 @@
+jcw:
+  dates:
+    - id: stringDate
+      stringDate: 2022-01-01
+    - id: javaUtilDate
+      javaUtilDate: 2022-01-01
+    # below entry is not mapped by micronaut because local date is specified as yaml timestamp
+    # see https://yaml.org/type/timestamp.html
+    - id: localDateAsDate
+      localDate: 2022-01-01
+    - id: localDateAsString
+      localDate: '2022-01-01'
+    - id: justId
