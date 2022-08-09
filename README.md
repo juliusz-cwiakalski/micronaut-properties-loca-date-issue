@@ -3,6 +3,9 @@
 This repository demonstrates pitfalls with Micronaut 3.6.0 properties mapping when
 using `java.time.LocalDate` properties in `application.yml`.
 
+Described problems has been raised
+as [Micronaut issue #7863](https://github.com/micronaut-projects/micronaut-core/issues/7863).
+
 See also [YAML timestamp specification](https://yaml.org/type/timestamp.html).
 
 Tests use following properties class
