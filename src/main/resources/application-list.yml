@@ -11,3 +11,6 @@ jcw:
     - id: localDateAsString
       localDate: '2022-01-01'
     - id: justId
+    - id: invalidLocalDateAsString
+      # 31st of April does not exist - Micronaut should throw an error or at least log this issue
+      localDate: '2022-04-31'

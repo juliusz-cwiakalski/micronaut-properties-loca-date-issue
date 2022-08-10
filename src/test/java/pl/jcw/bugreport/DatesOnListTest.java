@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.util.Date;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import pl.jcw.bugreport.Config.DatesListItem;
 
 @MicronautTest(environments = "list")
 class DatesOnListTest {
@@ -39,7 +40,15 @@ class DatesOnListTest {
   }
 
   @Test
-  void shouldReadFiveEntriesInYaml() {
-    Assertions.assertThat(config.getDates()).hasSize(5);
+  void shouldReadAllConfiguredItems() {
+    Assertions.assertThat(config.getDates())
+        .extracting(DatesListItem::getId)
+        .containsExactlyInAnyOrder(
+            "stringDate",
+            "javaUtilDate",
+            "localDateAsDate",
+            "localDateAsString",
+            "justId",
+            "invalidLocalDateAsString");
   }
 }
